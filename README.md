@@ -12,7 +12,8 @@ ________________________________________________________________________________
 Este modelo esta hecho para un juego con ACS por lo que recomendamos adaptarlo y eliminar el GUIP  (en este caso deberas eliminar las variables que hagan referencia a este en Inventario>Activr e Inventario>Desactivar)
 
 --  Instalación
-* Simplemente desagrupa (Ctrl + U) cada modelo en la carpeta indicada por el nombre de este mismo
+* Si utilizas el modelo desagrupa (Ctrl + U) cada modelo en la carpeta indicada por el nombre de este mismo
+* Sino cada script especifica donde debe ser colocado al inicio de este mismo
 
 
 -- Caracteristicas
