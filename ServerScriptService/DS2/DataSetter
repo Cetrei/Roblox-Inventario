@@ -1,0 +1,93 @@
+----- Services -----
+local Players = game:GetService("Players")
+
+----- Modules -----
+local ProfileService = require(script.ProfileService)
+local Profiles = require(script.Parent.Profiles)
+local CONSTANTS = require(script.CONSTANTS)
+
+----- Variables -----
+local ProfileStore = ProfileService.GetProfileStore(CONSTANTS.Profile_Key, CONSTANTS.Default_Data)
+
+----- Main -----
+local function create_data_instance(data, name, value)
+	local instance_type = typeof(data)
+	instance_type = instance_type == "number" and "NumberValue" or instance_type == "boolean" and "BoolValue" or instance_type == "string" and "StringValue" or nil
+	
+	if instance_type then
+		local data_instance = Instance.new(instance_type)
+		data_instance.Name = name
+		data_instance.Value = data
+
+		return data_instance
+	end
+end
+
+local function new_data(data, player)
+	local profile = Profiles[player.UserId]
+	if profile then
+		profile.Data[data.Name] = data.Value
+		
+		data:GetPropertyChangedSignal("Value"):Connect(function()
+			profile.Data[data.Name] = data.Value
+		end)
+	end
+end
+
+local function profile_loaded(profile, player)
+	local data_folder = Instance.new("Folder")
+	data_folder.Name = "Data_Folder"
+	data_folder.Parent = player
+	
+	data_folder.ChildAdded:Connect(function(data)
+		new_data(data, player)
+	end)
+
+	data_folder.ChildRemoved:Connect(function(data)
+		Profiles[player.UserId].Data[data.Name] = nil
+	end)
+	
+	for name, data in pairs(profile.Data) do
+		local data_instance = create_data_instance(data, name)
+		if data_instance then
+			data_instance.Parent = data_folder
+		end
+	end
+end
+
+
+
+local function player_added(player)
+	local profile = ProfileStore:LoadProfileAsync("Player_" .. player.UserId)
+	if profile then
+		profile:Reconcile()
+		
+		profile:ListenToRelease(function()
+			Profiles[player.UserId] = nil
+			player:Kick()
+		end)
+		
+		if player:IsDescendantOf(Players) then
+			Profiles[player.UserId] = profile
+			profile_loaded(profile, player)
+		else
+			profile:Release()
+		end
+	else
+		player:Kick()
+	end
+end
+
+local function player_left(player)
+	local profile = Profiles[player.UserId]
+	if profile then
+		profile:Release()
+	end
+end
+
+for _, player in pairs(Players:GetPlayers()) do
+	player_added(player)
+end
+
+Players.PlayerAdded:Connect(player_added)
+Players.PlayerRemoving:Connect(player_left)
