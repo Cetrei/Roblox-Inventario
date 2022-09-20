@@ -1,0 +1,172 @@
+local HttpService = game:GetService("HttpService")
+local events = game.ReplicatedStorage.InvEvents
+
+
+game.Players.PlayerAdded:Connect(function(player)
+	player.CharacterAdded:Connect(function()
+		if not game.ServerStorage.Inventories:FindFirstChild(player.Name.."Inventory") then
+	        local invFolder = Instance.new("Folder", game.ServerStorage.Inventories)
+			invFolder.Name = player.Name..'Inventory' -- Ex: BobInventory
+			print('Unique Folder Added To Inventory: ServerStorage')
+			
+			
+			--// Let's load any data we may have
+			local InvStat = player:WaitForChild("Data_Folder").InvData
+			
+			if InvStat.Value ~= '' then
+				--// Now Lets replicate to our Folder
+				
+				local LoadedData = HttpService:JSONDecode(InvStat.Value)
+				
+				for i, x in pairs(LoadedData[1]) do
+					if x then
+						local newString = Instance.new("StringValue", invFolder)
+						newString.Name = tostring(x)
+					end
+				end
+				
+			
+				--// now lets send this data to the server
+				events.LoadData:FireClient(player, LoadedData)
+				
+				
+			end
+			
+			
+		end
+    end)
+end)
+
+events.AddToInv.OnServerEvent:Connect(function(player, item)
+	
+	local debounce = false
+	
+	if debounce == false then
+		debounce = true
+		local current = player:FindFirstChild("Data_Folder").CurrentStorage
+		current.Value += 1
+		
+		local toInv = Instance.new("StringValue")
+		toInv.Parent = game.ServerStorage.Inventories:FindFirstChild(player.Name.."Inventory")
+		toInv.Name = tostring(item)
+
+		print('Added To Inventory! Item: '..item)
+		
+		task.wait(0.5)
+		
+		--//Saving
+		local playerData = game.ServerStorage.Inventories:FindFirstChild(player.Name.."Inventory")
+		local InvStat = player:FindFirstChild("Data_Folder").InvData
+		if InvStat and playerData then
+			print('Found Player Inventory: ServerStorage (Attempting Save)')
+			local Contents = {}
+			
+			for i, itemdata in pairs (playerData:GetChildren()) do
+				table.insert(Contents, itemdata.Name)
+		
+			end
+
+			task.wait()
+			
+			
+			local ToSave = {Contents}
+			
+	
+			local FinalSaveData = HttpService:JSONEncode(ToSave) -- Save the data
+			InvStat.Value =  FinalSaveData
+			
+	
+	
+		end
+		
+		
+		debounce = false
+
+	end
+
+end)
+
+events.RemoveFromInv.OnServerEvent:Connect(function(player, item)
+	local debounce = false
+    print('called event')
+	if debounce == false then
+		debounce = true
+		local current = player:FindFirstChild("Data_Folder").CurrentStorage
+		current.Value -= 1
+
+		local inv = game.ServerStorage.Inventories:FindFirstChild(player.Name.."Inventory")
+		inv:FindFirstChild(item):Destroy() 
+		
+
+		print('Removed From Inventory! Item: '..item)
+
+		task.wait(0.5)
+
+		--//Saving
+		local playerData = game.ServerStorage.Inventories:FindFirstChild(player.Name.."Inventory")
+		local InvStat = player:FindFirstChild("Data_Folder").InvData
+		if InvStat and playerData then
+			print('Found Player Inventory: ServerStorage (Attempting Save)')
+			local Contents = {}
+
+			for i, itemdata in pairs (playerData:GetChildren()) do
+				table.insert(Contents, itemdata.Name)		
+			end
+
+			task.wait()
+
+
+			local ToSave = {Contents}
+
+
+			local FinalSaveData = HttpService:JSONEncode(ToSave) -- Save the data
+			InvStat.Value =  FinalSaveData
+
+
+
+		end
+		debounce = false
+
+	end
+end)
+
+game.ReplicatedStorage.InvEvents.ObjectGive.OnServerEvent:Connect(function(player, item, priority)
+	--// Priority can be Primary, Secondary, or Other \\ Tool.Priority is dif.
+	local backpack = player.Backpack
+	local char = player.Character
+	
+	for i, x in pairs(backpack:GetChildren()) do
+		if x:FindFirstChild("Priority") and  x:FindFirstChild("Priority").Value ~= ''  then -- say it was Primary (only 1 Primary can exist)
+			if x:FindFirstChild("Priority").Value == tostring(priority) then
+			   x:Destroy()
+			end
+		else
+		end
+	end
+	
+
+	for i, x in pairs(char:GetChildren()) do
+		if x:FindFirstChild("Priority") and  x:FindFirstChild("Priority").Value ~= ''  then -- say it was Primary (only 1 Primary can exist)
+			if x:FindFirstChild("Priority").Value == tostring(priority) then
+			   x:Destroy()
+			end
+		else
+		end
+	end
+	
+	
+	if item ~= nil then -- meaning player is not removing an item
+
+		
+		local giveTool = game.ReplicatedStorage.Tools:FindFirstChild(tostring(item)):Clone()
+		giveTool.Priority.Value = priority
+		giveTool.Parent = backpack
+	elseif item == nil then
+		print('No Item, just Removing')
+		
+	end
+
+
+	
+	
+end)
