@@ -1,0 +1,3 @@
+local gui = game:GetService('StarterGui')
+
+gui:SetCoreGuiEnabled(Enum.CoreGuiType.EmotesMenu,false)
