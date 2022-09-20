@@ -1,0 +1,27 @@
+local DataStoreService = game:GetService("DataStoreService")
+local DataStore = DataStoreService:GetDataStore("CreditosStats")
+
+game.Players.PlayerAdded:Connect(function(Player)
+ local leaderstats = Instance.new("Folder", Player)
+ leaderstats.Name = "leaderstats"
+ local Creditos = Instance.new("IntValue", leaderstats)
+ Creditos.Name = "Creditos"
+ Creditos.Value = 100 
+ 
+ local Data = DataStore:GetAsync(Player.UserId)
+ if Data then
+  Creditos.Value = Data 
+ end
+end)
+
+game.Players.PlayerRemoving:Connect(function(Player)
+ DataStore:SetAsync(Player.UserId, Player.leaderstats.Creditos.Value) 
+end)
+
+while wait(10)do --ใส่เวลา
+for a,b in pairs(game.Players:GetPlayers())do
+if b:FindFirstChild'leaderstats'then
+b.leaderstats.Creditos.Value=b.leaderstats.Creditos.Value+0.5
+end
+end
+end
