@@ -12,9 +12,7 @@ ________________________________________________________________________________
 Este modelo esta hecho para un juego con ACS por lo que recomendamos adaptarlo y eliminar el GUIP  (en este caso deberas eliminar las variables que hagan referencia a este en Inventario>Activr e Inventario>Desactivar)
 
 --  Instalación
-* Si utilizas el modelo desagrupa (Ctrl + U) cada modelo en la carpeta indicada por el nombre de este mismo
-* Sino cada script especifica donde debe ser colocado al inicio de este mismo
-
+* Desagrupa (Ctrl + U) cada modelo en la carpeta indicada por el nombre de este mismo
 
 -- Caracteristicas
 * Inventario de CedGo modificado (se abre con la L) con las funciones que este trae por defecto y otras agregadas
