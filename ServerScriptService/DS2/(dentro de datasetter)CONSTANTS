@@ -1,0 +1,10 @@
+return {
+	Profile_Key = "InventorySystem1",
+	
+	Default_Data = {
+		CurrentStorage = 0, -- We use this determine if an object should be removed/ornot
+		MaxStorage = 15, -- Starting Storage for New Players
+		InvData = '', --To save, I'm using JSONEncoding Method
+	
+	},
+}
