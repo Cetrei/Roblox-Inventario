@@ -9,7 +9,9 @@
 
 ______________________________________________________________________________________________________________
 
-Este modelo esta hecho para un juego con ACS por lo que recomendamos adaptarlo y eliminar el GUIP  (en este caso deberas eliminar las variables que hagan referencia a este en Inventario>Activr e Inventario>Desactivar)
+Este modelo esta hecho para un juego con ACS por lo que recomendamos adaptarlo y eliminar el GUIP  (en este caso deberas eliminar las variables que hagan referencia a este en Inventario>Activar e Inventario>Desactivar)
+
+En el repositorio estan scripts  escenciales para el funcionamiento del modelo por lo que verifica que sean iguales a los del modelo
 
 --  Instalación
 * Modelo: https://www.roblox.com/library/10963616518/Inventario-Cetrei
